@@ -24,6 +24,6 @@ func main() {
 
 	svc := service.NewService(cfg)
 
-	sr := svc.GetStatisticsReport(dataDescription)
+	svc.GetStatisticsReport(dataDescription)
 
 }
