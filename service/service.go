@@ -12,7 +12,7 @@ import (
 )
 
 type Service interface {
-	GetNumberOfCICReports(dataDescription string)
+	GetStatisticsReport(dataDescription string) *models.StatisticsReport
 }
 
 type Impl struct {
@@ -26,7 +26,7 @@ func NewService(cfg *config.Config) Service {
 	}
 }
 
-func (s *Impl) GetNumberOfCICReports(dataDescription string) {
+func (s *Impl) GetStatisticsReport(dataDescription string) *models.StatisticsReport {
 
 	// Retrieve all transactions which are closed and match our dataDescription string.
 	transactions, err := s.transactionClient.GetAccountsTransactions(dataDescription)
@@ -35,12 +35,15 @@ func (s *Impl) GetNumberOfCICReports(dataDescription string) {
 		os.Exit(1)
 	}
 
-	// Grab our stats inside a StatisticsReport struct.
+	// Store our stats inside a StatisticsReport struct.
 	sr := sortTransactionsPerMonth(transactions)
 
 	// Print the struct cleanly for the user to view.
 	// (in future I suggest we look to output to CSV or some sort of document store).
+	// Payments-reconciler example of storing to CSV.
 	printStatisticsReport(sr)
+
+	return sr
 }
 
 /*
@@ -90,8 +93,6 @@ func sortTransactionsPerMonth(transactions *[]models.Transaction) *models.Statis
 
 func printStatisticsReport(sr *models.StatisticsReport) {
 
-
-
 	// Filings for the first year, printed per month.
 	log.Info(fmt.Sprintf("--- Statistics Report Tool ---"))
 	log.Info(fmt.Sprintf("--- Within 12 months Filings (Per Month) ---"))
@@ -110,5 +111,4 @@ func printStatisticsReport(sr *models.StatisticsReport) {
 	log.Info(fmt.Sprintf("Accepted transactions: %d", sr.AcceptedTransactions))
 	log.Info(fmt.Sprintf("Rejected transactions: %d", sr.RejectedTransactions))
 	log.Info(fmt.Sprintf("-------------------"))
-
 }
