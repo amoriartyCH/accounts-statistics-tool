@@ -6,8 +6,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/BSaunders95/accounts-statistics-tool/config"
-	"github.com/BSaunders95/accounts-statistics-tool/models"
+	"github.com/amoriartyCH/accounts-statistics-tool/config"
+	"github.com/amoriartyCH/accounts-statistics-tool/models"
 	log "github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"

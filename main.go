@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/BSaunders95/accounts-statistics-tool/config"
-	"github.com/BSaunders95/accounts-statistics-tool/service"
+	"github.com/amoriartyCH/accounts-statistics-tool/config"
+	"github.com/amoriartyCH/accounts-statistics-tool/service"
 	log "github.com/sirupsen/logrus"
 )
 

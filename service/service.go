@@ -2,12 +2,12 @@ package service
 
 import (
 	"fmt"
-	"github.com/BSaunders95/accounts-statistics-tool/models"
+	"github.com/amoriartyCH/accounts-statistics-tool/models"
 	"os"
 	"time"
 
-	"github.com/BSaunders95/accounts-statistics-tool/config"
-	"github.com/BSaunders95/accounts-statistics-tool/db"
+	"github.com/amoriartyCH/accounts-statistics-tool/config"
+	"github.com/amoriartyCH/accounts-statistics-tool/db"
 	log "github.com/sirupsen/logrus"
 )
 
