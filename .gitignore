@@ -1,5 +1,5 @@
 .idea/
-accounts-statistics-tool
+#accounts-statistics-tool
 
 # Compiled source #
 ###################
@@ -8,6 +8,4 @@ accounts-statistics-tool
 *.dll
 *.exe
 *.o
-*.so
-
 *.so

@@ -2,9 +2,9 @@ package models
 
 type StatisticsReport struct {
 
-	ClosedTransactions					int
-	AcceptedTransactions				int
-	RejectedTransactions				int
+	ClosedTransactions		int
+	AcceptedTransactions	int
+	RejectedTransactions	int
 
 	FirstYearAcceptedMonthlyFilings 	map[int]int
 	SecondYearAcceptedMonthlyFilings 	map[int]int
@@ -23,3 +23,4 @@ func NewStatisticsReport() *StatisticsReport {
 		SecondYearAcceptedMonthlyFilings: make(map[int]int, 0),
 	}
 }
+
