@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/amoriartyCH/accounts-statistics-tool/models"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/amoriartyCH/accounts-statistics-tool/config"
@@ -58,7 +59,7 @@ func sortTransactionsPerMonth(transactions *[]models.Transaction) *models.Statis
 	sr := models.NewStatisticsReport()
 
 	// Instantly set our ClosedTransactions counter to the length of the slice passed in.
-	sr.ClosedTransactions = len(*transactions)
+	sr.FirstYearAcceptedMonthlyFilings["ClosedTransactions"] = len(*transactions)
 
 	// Define a time of 1 year ago using today's date.
 	oneYearAgo := time.Now().AddDate(-1, 0, 0)
@@ -75,15 +76,15 @@ func sortTransactionsPerMonth(transactions *[]models.Transaction) *models.Statis
 
 			// If our transaction was closed within a year from today, then its added to our FirstYearFilings map.
 			if t.Data.ClosedAt.After(oneYearAgo) {
-				sr.FirstYearAcceptedMonthlyFilings[int(t.Data.ClosedAt.Month())]++
+				sr.FirstYearAcceptedMonthlyFilings[strconv.Itoa(int(t.Data.ClosedAt.Month()))]++
 			}
 
 			// Increase our accepted transactions by 1 each loop if we reach this point.
-			sr.AcceptedTransactions++
+			sr.FirstYearAcceptedMonthlyFilings["AcceptedTransactions"]++
 
 		} else if rejected {
 			//Alternatively if the filing we rejected then we increase our rejected filings by 1.
-			sr.RejectedTransactions++
+			sr.FirstYearAcceptedMonthlyFilings["RejectedTransactions"]++
 		}
 	}
 
@@ -98,17 +99,21 @@ func printStatisticsReport(sr *models.StatisticsReport) {
 	log.Info(fmt.Sprintf("--- Within 12 months Filings (Per Month) ---"))
 
 	for i, f := range sr.FirstYearAcceptedMonthlyFilings {
-		log.Info(fmt.Sprintf("%v Filings: %d", time.Month(i).String(), f))
+		month, err := strconv.Atoi(i)
+		if err != nil {
+			continue
+		}
+		log.Info(fmt.Sprintf("%v Filings: %d", time.Month(month).String(), f))
 	}
 
-	log.Info(fmt.Sprintf("--- Total: %d ---", sr.ClosedTransactions))
+	log.Info(fmt.Sprintf("--- Total: %d ---", sr.FirstYearAcceptedMonthlyFilings["ClosedTransactions"]))
 	log.Info(fmt.Sprintf("-------------------"))
 
 
 	// Total filings printed per status.
 	log.Info(fmt.Sprintf("--- Filings grouped by status ---"))
-	log.Info(fmt.Sprintf("Closed transactions: %d", sr.ClosedTransactions))
-	log.Info(fmt.Sprintf("Accepted transactions: %d", sr.AcceptedTransactions))
-	log.Info(fmt.Sprintf("Rejected transactions: %d", sr.RejectedTransactions))
+	log.Info(fmt.Sprintf("Closed transactions: %d", sr.FirstYearAcceptedMonthlyFilings["ClosedTransactions"]))
+	log.Info(fmt.Sprintf("Accepted transactions: %d", sr.FirstYearAcceptedMonthlyFilings["AcceptedTransactions"]))
+	log.Info(fmt.Sprintf("Rejected transactions: %d", sr.FirstYearAcceptedMonthlyFilings["RejectedTransactions"]))
 	log.Info(fmt.Sprintf("-------------------"))
 }
