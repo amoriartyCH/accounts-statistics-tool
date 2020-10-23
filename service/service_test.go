@@ -29,7 +29,7 @@ func TestImpl_GetStatisticsReport(t *testing.T) {
 }
 
 func testTransactionsFromClientReturnsError(t *testing.T, mClient *m.MockTransactionClient) {
-	c.Convey("Given I want a list of closed transactions which are sorted into a StatisticsReport struct", t, func(){
+	c.Convey("Given I want a list of closed transactions which are sorted into a StatisticsReport struct", t, func() {
 		svc := &Impl{
 			transactionClient: mClient,
 		}
@@ -76,7 +76,7 @@ func testTransactionsSortsCorrectly(t *testing.T, transactions *[]models.Transac
 func createTransactionsSlice() *[]models.Transaction {
 
 	// filings date which will always be February just passed. (within a year).
-	filingDate := time.Date(time.Now().AddDate(0,-5,0).Year(),2, 1,0,0,0,0,time.UTC)
+	filingDate := time.Date(time.Now().AddDate(0, -5, 0).Year(), 2, 1, 0, 0, 0, 0, time.UTC)
 
 	// Initialise empty slice of transactions.
 	transactions := make([]models.Transaction, 0)

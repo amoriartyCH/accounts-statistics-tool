@@ -51,7 +51,7 @@ func (s *Impl) GetStatisticsReport(dataDescription string) *models.StatisticsRep
 		-Firstly they will be grouped by a status of "accepted" or "rejected"
 		-Secondly they will be grouped by year of filing
 		-Finally they will be grouped by month of filing
- */
+*/
 func sortTransactionsPerMonth(transactions *[]models.Transaction) *models.StatisticsReport {
 
 	// Initialise our statisticsReport, this will be used to hold all stats needed.
@@ -67,8 +67,8 @@ func sortTransactionsPerMonth(transactions *[]models.Transaction) *models.Statis
 	for _, t := range *transactions {
 
 		// Retrieve the status of the transactions filing from each transaction.
-		accepted := t.Data.Filings[t.ID + "-1"].Status == "accepted"
-		rejected := t.Data.Filings[t.ID + "-1"].Status == "rejected"
+		accepted := t.Data.Filings[t.ID+"-1"].Status == "accepted"
+		rejected := t.Data.Filings[t.ID+"-1"].Status == "rejected"
 
 		// If our status was accepted then we are interested in logging which year/month it happened.
 		if accepted {
@@ -103,7 +103,6 @@ func printStatisticsReport(sr *models.StatisticsReport) {
 
 	log.Info(fmt.Sprintf("--- Total: %d ---", sr.ClosedTransactions))
 	log.Info(fmt.Sprintf("-------------------"))
-
 
 	// Total filings printed per status.
 	log.Info(fmt.Sprintf("--- Filings grouped by status ---"))
