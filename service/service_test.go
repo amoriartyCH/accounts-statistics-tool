@@ -66,8 +66,7 @@ func testTransactionsSortsCorrectly(t *testing.T, transactions *[]models.Transac
 				c.So(sr.ClosedTransactions, c.ShouldEqual, 2)
 				c.So(sr.AcceptedTransactions, c.ShouldEqual, 1)
 				c.So(sr.RejectedTransactions, c.ShouldEqual, 1)
-				filingDateMonth := time.Month(2) // 2(february) is the filingDate Month found in createTransactionsSlice function below
-				c.So(sr.FirstYearAcceptedMonthlyFilings[int(filingDateMonth)], c.ShouldEqual, 1)
+				c.So(sr.FirstYearAcceptedMonthlyFilings[time.February], c.ShouldEqual, 1)
 			})
 		})
 	})
@@ -76,6 +75,7 @@ func testTransactionsSortsCorrectly(t *testing.T, transactions *[]models.Transac
 
 func createTransactionsSlice() *[]models.Transaction {
 
+	// filings date which will always be February just passed. (within a year).
 	filingDate := time.Date(time.Now().AddDate(0,-5,0).Year(),2, 1,0,0,0,0,time.UTC)
 
 	// Initialise empty slice of transactions.
