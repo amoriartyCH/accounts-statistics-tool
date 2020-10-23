@@ -75,7 +75,7 @@ func sortTransactionsPerMonth(transactions *[]models.Transaction) *models.Statis
 
 			// If our transaction was closed within a year from today, then its added to our FirstYearFilings map.
 			if t.Data.ClosedAt.After(oneYearAgo) {
-				sr.FirstYearAcceptedMonthlyFilings[int(t.Data.ClosedAt.Month())]++
+				sr.FirstYearAcceptedMonthlyFilings[t.Data.ClosedAt.Month()]++
 			}
 
 			// Increase our accepted transactions by 1 each loop if we reach this point.
@@ -97,8 +97,8 @@ func printStatisticsReport(sr *models.StatisticsReport) {
 	log.Info(fmt.Sprintf("--- Statistics Report Tool ---"))
 	log.Info(fmt.Sprintf("--- Within 12 months Filings (Per Month) ---"))
 
-	for i, f := range sr.FirstYearAcceptedMonthlyFilings {
-		log.Info(fmt.Sprintf("%v Filings: %d", time.Month(i).String(), f))
+	for month, total := range sr.FirstYearAcceptedMonthlyFilings {
+		log.Info(fmt.Sprintf("%v Filings: %d", month.String(), total))
 	}
 
 	log.Info(fmt.Sprintf("--- Total: %d ---", sr.ClosedTransactions))
