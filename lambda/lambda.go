@@ -7,6 +7,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// Lambda facilitates the execution of Company Accounts statistics retrieval.
 type Lambda struct {
 	Service service.Service
 }

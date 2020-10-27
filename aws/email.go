@@ -3,9 +3,9 @@ package aws
 import (
 	"bytes"
 	encsv "encoding/csv"
-	"github.com/amoriartyCH/accounts-statistics-tool/config"
+	c "github.com/amoriartyCH/accounts-statistics-tool/config"
 	"github.com/amoriartyCH/accounts-statistics-tool/models"
-	"github.com/aws/aws-sdk-go/aws"
+	amaws"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ses"
 	"gopkg.in/gomail.v2"
@@ -20,7 +20,7 @@ const (
 
 // EmailGenerator provides an interface by which to interact with aws emails.
 type EmailGenerator interface {
-	GenerateEmail(csv *models.CSV, cfg *config.Config) error
+	GenerateEmail(csv *models.CSV, cfg *c.Config) error
 }
 
 // Impl is a concrete implementation of the EmailGenerator interface.
@@ -33,10 +33,10 @@ func NewEmailGenerator() EmailGenerator {
 }
 
 // GenerateEmail is a method used to send an email using amazon's Golang sdk.
-func (eg *Impl) GenerateEmail(csv *models.CSV, cfg *config.Config) error {
+func (eg *Impl) GenerateEmail(csv *models.CSV, cfg *c.Config) error {
 
-	sess, err := session.NewSession(&aws.Config{
-		Region: aws.String(awsRegion)},
+	sess, err := session.NewSession(&amaws.Config{
+		Region: amaws.String(awsRegion)},
 	)
 	if err != nil {
 		return err

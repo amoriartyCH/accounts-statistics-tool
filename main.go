@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/amoriartyCH/accounts-statistics-tool/config"
 	"github.com/amoriartyCH/accounts-statistics-tool/lambda"
-	. "github.com/aws/aws-lambda-go/lambda"
+	lam "github.com/aws/aws-lambda-go/lambda"
 	log "github.com/sirupsen/logrus"
 	"os"
 )
@@ -21,5 +21,5 @@ func main() {
 	config.SetLogLevel(cfg)
 
 	l := lambda.New(cfg)
-	Start(l.Execute)
+	lam.Start(l.Execute)
 }

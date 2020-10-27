@@ -49,4 +49,4 @@ lint: GO111MODULE = off
 lint:
 	go get -u github.com/alecthomas/gometalinter
 	gometalinter --install
-	gometalinter ./... > $(lint_output); true
+	GO111MODULE=on && gometalinter ./... > $(lint_output); true

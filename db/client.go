@@ -73,16 +73,13 @@ type MongoDatabaseInterface interface {
 	Collection(name string, opts ...*options.CollectionOptions) *mongo.Collection
 }
 
+// GetAccountsTransactions returns a slice of Transaction which are retrieved from a mongoDB.
 func (c *TransactionDatabaseClient) GetAccountsTransactions(dataDescription string) (*[]models.Transaction, error) {
 
 	entities := make([]models.Transaction, 0)
 
-	//last12Months := time.Now().AddDate(-1, 0, 0)
-
 	collection := c.db.Collection("transactions")
 	cur, err := collection.Find(context.Background(), bson.M{"data.status": "closed", "data.description": dataDescription})
-	// ,
-	// 	"data.closed_at": bson.M{"$gte": last12Months}})
 
 	if err != nil {
 		return nil, err
