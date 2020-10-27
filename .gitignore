@@ -9,3 +9,8 @@ accounts-statistics-tool
 *.exe
 *.o
 *.so
+
+# Logs #
+###################
+*.out
+*.txt

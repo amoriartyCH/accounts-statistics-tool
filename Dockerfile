@@ -11,6 +11,12 @@ ENV TRANSACTIONS_MONGODB_DATABASE=$transactions_mongodb_database
 ARG log_level
 ENV LOG_LEVEL=$log_level
 
+ARG sender_email
+ENV SENDER_EMAIL=$sender_email
+
+ARG reciever_email
+ENV RECEIVER_EMAIL=$reciever_email
+
 WORKDIR /app
 COPY . .
 RUN GO111MODULE=on go build

@@ -1,34 +1,40 @@
 package lambda
 
 import (
-	"fmt"
 	"github.com/amoriartyCH/accounts-statistics-tool/aws"
 	"github.com/amoriartyCH/accounts-statistics-tool/config"
 	"github.com/amoriartyCH/accounts-statistics-tool/service"
+	log "github.com/sirupsen/logrus"
 )
 
 type Lambda struct {
-	Service      service.Service
+	Service service.Service
 }
 
-type jsonBody struct {}
+type jsonBody struct{}
 
-// New returns a new Lambda using the provided configs
+// New returns a new Lambda using the provided configs.
 func New(cfg *config.Config) *Lambda {
-
 	return &Lambda{
-		Service:      service.NewService(cfg),
+		Service: service.NewService(cfg),
 	}
 }
 
-// Execute handles lambda execution
+// Execute handles lambda execution.
 func (lambda *Lambda) Execute(j *jsonBody) error {
 
 	srCSV := lambda.Service.GetStatisticsReport("CIC report and full accounts")
 
-	err := aws.GenerateEmail(srCSV)
+	eg := aws.NewEmailGenerator()
+
+	cfg, err := config.Get()
 	if err != nil {
-		fmt.Println(err.Error())
+		log.Error(err.Error())
+	}
+
+	err = eg.GenerateEmail(srCSV, cfg)
+	if err != nil {
+		log.Error(err.Error())
 	}
 
 	return nil

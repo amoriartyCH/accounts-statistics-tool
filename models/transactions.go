@@ -4,12 +4,13 @@ import (
 	"time"
 )
 
-// Transaction describes a transaction database entity
+// Transaction describes a transaction database entity.
 type Transaction struct {
 	ID   string          `bson:"_id"`
 	Data TransactionData `bson:"data"`
 }
 
+// TransactionData holds the data of each Transaction.
 type TransactionData struct {
 	Description string                       `bson:"description"`
 	Filings     map[string]TransactionFiling `bson:"filings"`
@@ -18,6 +19,7 @@ type TransactionData struct {
 	ClosedAt    time.Time                    `bson:"created_at"`
 }
 
+// TransactionFiling contains the type and status of a Transactions Filing.
 type TransactionFiling struct {
 	Type   string `bson:"type"`
 	Status string `bson:"status"`

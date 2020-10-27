@@ -14,30 +14,24 @@ import (
 const statisticsReportFileNamePrefix = "CHS_SmallFullAccounts_Statistics"
 const csvFileSuffix = ".csv"
 
+// Service provides an interface to retrieve statistics in a CSV format.
 type Service interface {
 	GetStatisticsReport(dataDescription string) *models.CSV
 }
 
-// A concrete implementation of the Service interface.
+// Impl is a concrete implementation of the Service interface.
 type Impl struct {
 	transactionClient db.TransactionClient
 }
 
-/*
-	CONSTRUCTOR
-	Returns a new service interface implementation.
- */
+// NewService returns a new service interface implementation.
 func NewService(cfg *config.Config) Service {
-
 	return &Impl{
 		transactionClient: db.NewTransactionDatabaseClient(cfg),
 	}
 }
 
-/*
-This method retrieves and marshals transaction data into a statistics report
-which is returned in a CSV format ready for attaching to email.
-*/
+// GetStatisticsReport returns a CSV version of the StatisticsReport struct, which is comprised of transactions data.
 func (s *Impl) GetStatisticsReport(dataDescription string) *models.CSV {
 
 	transactions, err := s.transactionClient.GetAccountsTransactions(dataDescription)
@@ -51,17 +45,16 @@ func (s *Impl) GetStatisticsReport(dataDescription string) *models.CSV {
 	// Print will only log at trace level.
 	printStatisticsReport(sr)
 
-	 csv := constructCSV(sr)
+	csv := constructCSV(sr)
 
 	return &csv
 }
 
-/*
-	This function will take a slice of transactions and sort them:
-		-Firstly they will be grouped by a status of "accepted" or "rejected"
-		-Secondly they will be grouped by year of filing
-		-Finally they will be grouped by month of filing
-*/
+// sortTransactionsPerMonth takes a slice of Transaction and groups them by the following criteria:
+// 1. Grouped by Status being either Accepted or Rejected.
+// 2. Grouped by of filing.
+// 3. Grouped by month of filing.
+// Returns a StatisticsReport model.
 func sortTransactionsPerMonth(transactions *[]models.Transaction) *models.StatisticsReport {
 
 	sr := models.NewStatisticsReport()
@@ -88,7 +81,7 @@ func sortTransactionsPerMonth(transactions *[]models.Transaction) *models.Statis
 	return sr
 }
 
-// Used at Trace Level to print the stats report.
+// printStatisticsReport logs at Trace level and prints the stats report.
 func printStatisticsReport(sr *models.StatisticsReport) {
 
 	// Filings for the first year, printed per month.
@@ -110,7 +103,7 @@ func printStatisticsReport(sr *models.StatisticsReport) {
 	log.Traceln(fmt.Sprintf("-------------------"))
 }
 
-// constructCSV marshals CSVable data into a CSV, accompanied by a file name
+// constructCSV marshals CSVable data into a CSV, accompanied by a file name.
 func constructCSV(data models.CSVable) models.CSV {
 
 	return models.CSV{
