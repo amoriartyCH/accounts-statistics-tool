@@ -58,15 +58,13 @@ func testTransactionsSortsCorrectly(t *testing.T, transactions *[]models.Transac
 
 			mClient.EXPECT().GetAccountsTransactions(description).Return(transactions, nil)
 
-			c.Convey("Then I am returned a valid StatisticsReport struct", func() {
+			c.Convey("Then I am returned a valid CSV struct containing StatisticsReport data", func() {
 
-				sr := svc.GetStatisticsReport(description)
+				csv := svc.GetStatisticsReport(description)
+				expectedCSVFileName := "CHS_SmallFullAccounts_Statistics.csv"
 
-				c.So(sr, c.ShouldNotBeNil)
-				c.So(sr.ClosedTransactions, c.ShouldEqual, 2)
-				c.So(sr.AcceptedTransactions, c.ShouldEqual, 1)
-				c.So(sr.RejectedTransactions, c.ShouldEqual, 1)
-				c.So(sr.FirstYearAcceptedMonthlyFilings[time.February], c.ShouldEqual, 1)
+				c.So(csv.Data, c.ShouldNotBeNil)
+				c.So(csv.FileName, c.ShouldEqual, expectedCSVFileName)
 			})
 		})
 	})

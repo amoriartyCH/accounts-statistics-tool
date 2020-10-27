@@ -14,18 +14,18 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-// TransactionClient provides an interface by which to interact with a database
+// TransactionClient provides an interface by which to interact with a database.
 type TransactionClient interface {
 	GetAccountsTransactions(dataDescription string) (*[]models.Transaction, error)
 	Shutdown()
 }
 
-// TransactionDatabaseClient is a concrete implementation of the Client interface
+// TransactionDatabaseClient is a concrete implementation of the Client interface.
 type TransactionDatabaseClient struct {
 	db MongoDatabaseInterface
 }
 
-// NewTransactionDatabaseClient returns a new implementation of the Client interface
+// NewTransactionDatabaseClient returns a new implementation of the Client interface.
 func NewTransactionDatabaseClient(cfg *config.Config) TransactionClient {
 	return &TransactionDatabaseClient{
 		db: getMongoDatabase(cfg.TransactionsMongoDBURL, cfg.TransactionsMongoDBDatabase),
@@ -68,7 +68,7 @@ func getMongoDatabase(mongoDBURL, databaseName string) MongoDatabaseInterface {
 	return getMongoClient(mongoDBURL).Database(databaseName)
 }
 
-// MongoDatabaseInterface is an interface that describes the mongodb driver
+// MongoDatabaseInterface is an interface that describes the mongodb driver.
 type MongoDatabaseInterface interface {
 	Collection(name string, opts ...*options.CollectionOptions) *mongo.Collection
 }
@@ -103,7 +103,7 @@ func (c *TransactionDatabaseClient) GetAccountsTransactions(dataDescription stri
 	return &entities, nil
 }
 
-// Shutdown is a hook that can be used to clean up db resources
+// Shutdown is a hook that can be used to clean up db resources.
 func (c *TransactionDatabaseClient) Shutdown() {
 	log.Info("Attempting to close the db connection thread pool")
 	if mgoClient != nil {
