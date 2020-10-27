@@ -2,23 +2,31 @@ package service
 
 import (
 	"fmt"
+	"github.com/amoriartyCH/accounts-statistics-tool/config"
 	"github.com/amoriartyCH/accounts-statistics-tool/models"
 	"os"
 	"time"
 
-	"github.com/amoriartyCH/accounts-statistics-tool/config"
 	"github.com/amoriartyCH/accounts-statistics-tool/db"
 	log "github.com/sirupsen/logrus"
 )
 
+const statisticsReportFileNamePrefix = "CHS_SmallFullAccounts_Statistics"
+const csvFileSuffix = ".csv"
+
 type Service interface {
-	GetStatisticsReport(dataDescription string) *models.StatisticsReport
+	GetStatisticsReport(dataDescription string) *models.CSV
 }
 
+// A concrete implementation of the Service interface.
 type Impl struct {
 	transactionClient db.TransactionClient
 }
 
+/*
+	CONSTRUCTOR
+	Returns a new service interface implementation.
+ */
 func NewService(cfg *config.Config) Service {
 
 	return &Impl{
@@ -26,24 +34,26 @@ func NewService(cfg *config.Config) Service {
 	}
 }
 
-func (s *Impl) GetStatisticsReport(dataDescription string) *models.StatisticsReport {
+/*
+This method retrieves and marshals transaction data into a statistics report
+which is returned in a CSV format ready for attaching to email.
+*/
+func (s *Impl) GetStatisticsReport(dataDescription string) *models.CSV {
 
-	// Retrieve all transactions which are closed and match our dataDescription string.
 	transactions, err := s.transactionClient.GetAccountsTransactions(dataDescription)
 	if err != nil {
 		log.Error(fmt.Sprintf("Error when retrieving transactions: %s", err))
 		os.Exit(1)
 	}
 
-	// Store our stats inside a StatisticsReport struct.
 	sr := sortTransactionsPerMonth(transactions)
 
-	// Print the struct cleanly for the user to view.
-	// (in future I suggest we look to output to CSV or some sort of document store).
-	// Payments-reconciler example of storing to CSV.
+	// Print will only log at trace level.
 	printStatisticsReport(sr)
 
-	return sr
+	 csv := constructCSV(sr)
+
+	return &csv
 }
 
 /*
@@ -54,60 +64,57 @@ func (s *Impl) GetStatisticsReport(dataDescription string) *models.StatisticsRep
 */
 func sortTransactionsPerMonth(transactions *[]models.Transaction) *models.StatisticsReport {
 
-	// Initialise our statisticsReport, this will be used to hold all stats needed.
 	sr := models.NewStatisticsReport()
 
-	// Instantly set our ClosedTransactions counter to the length of the slice passed in.
 	sr.ClosedTransactions = len(*transactions)
 
-	// Define a time of 1 year ago using today's date.
 	oneYearAgo := time.Now().AddDate(-1, 0, 0)
 
-	// Loop over the found transactions and sort them per year and month.
 	for _, t := range *transactions {
-
-		// Retrieve the status of the transactions filing from each transaction.
 		accepted := t.Data.Filings[t.ID+"-1"].Status == "accepted"
 		rejected := t.Data.Filings[t.ID+"-1"].Status == "rejected"
 
-		// If our status was accepted then we are interested in logging which year/month it happened.
 		if accepted {
-
-			// If our transaction was closed within a year from today, then its added to our FirstYearFilings map.
 			if t.Data.ClosedAt.After(oneYearAgo) {
 				sr.FirstYearAcceptedMonthlyFilings[t.Data.ClosedAt.Month()]++
 			}
-
-			// Increase our accepted transactions by 1 each loop if we reach this point.
 			sr.AcceptedTransactions++
 
 		} else if rejected {
-			//Alternatively if the filing we rejected then we increase our rejected filings by 1.
 			sr.RejectedTransactions++
 		}
 	}
 
-	// Return our fully populated statistics report.
 	return sr
 }
 
+// Used at Trace Level to print the stats report.
 func printStatisticsReport(sr *models.StatisticsReport) {
 
 	// Filings for the first year, printed per month.
-	log.Info(fmt.Sprintf("--- Statistics Report Tool ---"))
-	log.Info(fmt.Sprintf("--- Within 12 months Filings (Per Month) ---"))
+	log.Traceln(fmt.Sprintf("--- Statistics Report Tool ---"))
+	log.Traceln(fmt.Sprintf("--- Within 12 months Filings (Per Month) ---"))
 
 	for month, total := range sr.FirstYearAcceptedMonthlyFilings {
-		log.Info(fmt.Sprintf("%v Filings: %d", month.String(), total))
+		log.Traceln(fmt.Sprintf("%v Filings: %d", month.String(), total))
 	}
 
-	log.Info(fmt.Sprintf("--- Total: %d ---", sr.ClosedTransactions))
-	log.Info(fmt.Sprintf("-------------------"))
+	log.Traceln(fmt.Sprintf("--- Total: %d ---", sr.ClosedTransactions))
+	log.Traceln(fmt.Sprintf("-------------------"))
 
 	// Total filings printed per status.
-	log.Info(fmt.Sprintf("--- Filings grouped by status ---"))
-	log.Info(fmt.Sprintf("Closed transactions: %d", sr.ClosedTransactions))
-	log.Info(fmt.Sprintf("Accepted transactions: %d", sr.AcceptedTransactions))
-	log.Info(fmt.Sprintf("Rejected transactions: %d", sr.RejectedTransactions))
-	log.Info(fmt.Sprintf("-------------------"))
+	log.Traceln(fmt.Sprintf("--- Filings grouped by status ---"))
+	log.Traceln(fmt.Sprintf("Closed transactions: %d", sr.ClosedTransactions))
+	log.Traceln(fmt.Sprintf("Accepted transactions: %d", sr.AcceptedTransactions))
+	log.Traceln(fmt.Sprintf("Rejected transactions: %d", sr.RejectedTransactions))
+	log.Traceln(fmt.Sprintf("-------------------"))
+}
+
+// constructCSV marshals CSVable data into a CSV, accompanied by a file name
+func constructCSV(data models.CSVable) models.CSV {
+
+	return models.CSV{
+		Data:     data,
+		FileName: statisticsReportFileNamePrefix + csvFileSuffix,
+	}
 }

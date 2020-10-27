@@ -2,13 +2,14 @@ package main
 
 import (
 	"fmt"
-	"os"
-
 	"github.com/amoriartyCH/accounts-statistics-tool/config"
-	"github.com/amoriartyCH/accounts-statistics-tool/service"
+	"github.com/amoriartyCH/accounts-statistics-tool/lambda"
+	. "github.com/aws/aws-lambda-go/lambda"
 	log "github.com/sirupsen/logrus"
+	"os"
 )
 
+// Main entry point for application, will create config from ENV variables and start the lambda.
 func main() {
 
 	cfg, err := config.Get()
@@ -17,13 +18,8 @@ func main() {
 		os.Exit(1)
 	}
 
-	dataDescription := "CIC report and full accounts"
-	if len(os.Args) > 1 {
-		dataDescription = os.Args[1]
-	}
+	config.SetLogLevel(cfg)
 
-	svc := service.NewService(cfg)
-
-	svc.GetStatisticsReport(dataDescription)
-
+	l := lambda.New(cfg)
+	Start(l.Execute)
 }

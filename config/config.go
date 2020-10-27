@@ -2,8 +2,10 @@ package config
 
 import (
 	"errors"
+	"fmt"
 	"github.com/companieshouse/gofigure"
 	log "github.com/sirupsen/logrus"
+	"os"
 	"sync"
 )
 
@@ -52,4 +54,19 @@ func Get() (*Config, error) {
 	}
 
 	return cfg, nil
+}
+
+// Sets the level of logging using the given ENV variable "LOG_LEVEL".
+func SetLogLevel(cfg *Config) {
+
+	if cfg.LogLevel != "" {
+		log.Info(fmt.Sprintf("Log level set in environment, attempting to set log level to: %s", cfg.LogLevel))
+		lvl, err := log.ParseLevel(cfg.LogLevel)
+		if err != nil {
+			log.Error(fmt.Sprintf("failed to set log level: %s. Exiting", err))
+			os.Exit(1)
+		}
+		log.SetLevel(lvl)
+		log.Info("Log level set successfully")
+	}
 }
