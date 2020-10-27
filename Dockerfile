@@ -14,8 +14,8 @@ ENV LOG_LEVEL=$log_level
 ARG sender_email
 ENV SENDER_EMAIL=$sender_email
 
-ARG reciever_email
-ENV RECEIVER_EMAIL=$reciever_email
+ARG receiver_email
+ENV RECEIVER_EMAIL=$receiver_email
 
 WORKDIR /app
 COPY . .
